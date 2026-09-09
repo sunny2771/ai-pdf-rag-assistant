@@ -10,6 +10,8 @@ import { QdrantVectorStore } from '@langchain/qdrant';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
+const PORT = process.env.PORT || 8000;
+
 const queue = new Queue('file-upload-queue', {
   connection: {
     url: process.env.REDIS_URL,
@@ -110,4 +112,7 @@ app.get('/chat', async (req, res) => {
   // });
 });
 
-app.listen(8000, () => console.log(`Server started on PORT:${8000}`));
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on PORT:${PORT}`);
+});
