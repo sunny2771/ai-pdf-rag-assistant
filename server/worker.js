@@ -1,5 +1,7 @@
+import 'dotenv/config';
 import { Worker } from 'bullmq';
-import { OpenAIEmbeddings } from '@langchain/openai';
+// import { OpenAIEmbeddings } from '@langchain/openai';
+import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { QdrantVectorStore } from '@langchain/qdrant';
 import { Document } from '@langchain/core/documents';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
@@ -22,15 +24,16 @@ const worker = new Worker(
     const loader = new PDFLoader(data.path);
     const docs = await loader.load();
 
-    const embeddings = new OpenAIEmbeddings({
-      model: 'text-embedding-3-small',
-      apiKey: '',
+    const embeddings = new GoogleGenerativeAIEmbeddings({
+      modelName: 'gemini-embedding-001',
+      apiKey: process.env.GEMINI_API_KEY,
     });
 
     const vectorStore = await QdrantVectorStore.fromExistingCollection(
       embeddings,
       {
-        url: 'http://localhost:6333',
+        url: process.env.QDRANT_URL,
+        apiKey: process.env.QDRANT_API_KEY,
         collectionName: 'langchainjs-testing',
       }
     );
@@ -40,8 +43,7 @@ const worker = new Worker(
   {
     concurrency: 100,
     connection: {
-      host: 'localhost',
-      port: '6379',
+      url: process.env.REDIS_URL,
     },
   }
 );

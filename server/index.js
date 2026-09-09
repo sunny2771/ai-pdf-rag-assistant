@@ -1,18 +1,18 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import { Queue } from 'bullmq';
-import { OpenAIEmbeddings } from '@langchain/openai';
+// import { OpenAIEmbeddings } from '@langchain/openai';
 import { QdrantVectorStore } from '@langchain/qdrant';
-import OpenAI from 'openai';
+// import OpenAI from 'openai';
 
-const client = new OpenAI({
-  apiKey: '',
-});
+import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+
 const queue = new Queue('file-upload-queue', {
   connection: {
-    host: 'localhost',
-    port: '6379',
+    url: process.env.REDIS_URL,
   },
 });
 
@@ -47,17 +47,25 @@ app.post('/upload/pdf', upload.single('pdf'), async (req, res) => {
   return res.json({ message: 'uploaded' });
 });
 
+const model = new ChatGoogleGenerativeAI({
+  model: 'gemini-3.6-flash',
+  apiKey: process.env.GEMINI_API_KEY,
+  temperature: 0.2,
+  maxOutputTokens: 1024,
+});
+
 app.get('/chat', async (req, res) => {
   const userQuery = req.query.message;
 
-  const embeddings = new OpenAIEmbeddings({
-    model: 'text-embedding-3-small',
-    apiKey: '',
+  const embeddings = new GoogleGenerativeAIEmbeddings({
+    modelName: 'gemini-embedding-001',
+    apiKey: process.env.GEMINI_API_KEY,
   });
   const vectorStore = await QdrantVectorStore.fromExistingCollection(
     embeddings,
     {
-      url: 'http://localhost:6333',
+      url: process.env.QDRANT_URL,
+      apiKey: process.env.QDRANT_API_KEY,
       collectionName: 'langchainjs-testing',
     }
   );
@@ -72,18 +80,34 @@ app.get('/chat', async (req, res) => {
   ${JSON.stringify(result)}
   `;
 
-  const chatResult = await client.chat.completions.create({
-    model: 'gpt-4.1',
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: userQuery },
-    ],
-  });
+  const response = await model.invoke([
+    {
+      role: 'system',
+      content: SYSTEM_PROMPT,
+    },
+    {
+      role: 'user',
+      content: userQuery,
+    },
+  ]);
 
   return res.json({
-    message: chatResult.choices[0].message.content,
+    message: response.content,
     docs: result,
   });
+
+  // const chatResult = await client.chat.completions.create({
+  //   model: 'gpt-4.1',
+  //   messages: [
+  //     { role: 'system', content: SYSTEM_PROMPT },
+  //     { role: 'user', content: userQuery },
+  //   ],
+  // });
+
+  // return res.json({
+  //   message: chatResult.choices[0].message.content,
+  //   docs: result,
+  // });
 });
 
 app.listen(8000, () => console.log(`Server started on PORT:${8000}`));
