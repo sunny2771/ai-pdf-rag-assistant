@@ -7,6 +7,7 @@ import {
   SignUpButton,
 } from "@clerk/nextjs";
 import "./globals.css";
+import HomePage from "./HomePage";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,8 @@ export default function RootLayout({
         >
           <section>
             <SignedOut>
-              <SignUpButton />
+              {/* <SignUpButton /> */}
+              <HomePage />
             </SignedOut>
           </section>
           <SignedIn>{children}</SignedIn>

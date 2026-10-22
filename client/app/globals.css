@@ -120,3 +120,191 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Styles for the home page. Import once from app/page.jsx. */
+
+.landing {
+  --paper: #f6f7fb;
+  --surface: #ffffff;
+  --ink: #131c33;
+  --muted: #566079;
+  --line: #dde2ee;
+  --brand: #2f4bd8;
+  --brand-deep: #2339b0;
+  --hl: #ffe45c;
+  --hl-soft: #fff6c2;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui), system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.landing h1,
+.landing h2,
+.landing h3 {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  font-weight: 600;
+}
+
+.landing .muted {
+  color: var(--muted);
+}
+
+.landing .surface {
+  background: var(--surface);
+}
+
+.landing .hairline {
+  border-color: var(--line);
+}
+
+.landing .doc-font {
+  font-family: var(--font-doc), Georgia, "Times New Roman", serif;
+}
+
+/* Buttons */
+.landing .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1.15rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.1;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.landing .btn-primary {
+  background: var(--brand);
+  color: #fff;
+}
+
+.landing .btn-primary:hover {
+  background: var(--brand-deep);
+}
+
+.landing .btn-quiet {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.landing .btn-quiet:hover {
+  border-color: var(--muted);
+}
+
+.landing .link-plain {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.landing .link-plain:hover {
+  color: var(--ink);
+}
+
+/* Visible keyboard focus */
+.landing :focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* The highlighter. This is the one animated moment on the page. */
+.landing mark.passage {
+  color: inherit;
+  background-color: transparent;
+  background-image: linear-gradient(var(--hl), var(--hl));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0.05em 0.15em;
+  margin: 0 -0.15em;
+  transition: background-size 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.landing mark.passage[data-on="true"] {
+  background-size: 100% 100%;
+}
+
+/* Chat question chips */
+.landing .chip {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.landing .chip:hover {
+  border-color: var(--muted);
+}
+
+.landing .chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* Blinking caret while the answer is being written */
+.landing .caret {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--brand);
+  animation: landing-blink 1s steps(1) infinite;
+}
+
+@keyframes landing-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Step numbers in the pipeline */
+.landing .step-dot {
+  display: inline-flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing mark.passage {
+    transition: none;
+  }
+  .landing .caret {
+    animation: none;
+  }
+}
+
+/* Smooth anchor scrolling, but only for people who haven't asked for less motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
