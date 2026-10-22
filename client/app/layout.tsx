@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  ClerkProvider,
-  SignedOut,
-  SignedIn,
-  SignUpButton,
-} from "@clerk/nextjs";
+import { ClerkProvider, SignedOut, SignedIn } from "@clerk/nextjs";
 import "./globals.css";
 import HomePage from "./HomePage";
 
@@ -37,7 +32,6 @@ export default function RootLayout({
         >
           <section>
             <SignedOut>
-              {/* <SignUpButton /> */}
               <HomePage />
             </SignedOut>
           </section>
